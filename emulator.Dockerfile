@@ -14,8 +14,8 @@ COPY ./android-emulator-container-scripts/setup.py \
     ./
 
 RUN pip3 install --upgrade pip setuptools
-RUN python3 ./setup.py build
-RUN python3 ./setup.py install
+RUN python3 ./android-emulator-container-scripts/setup.py build
+RUN python3 ./android-emulator-container-scripts/setup.py install
 
 RUN chmod +x /usr/lib/python3.6/site-packages/emu_docker-0+unknown-py3.6.egg
 RUN ls -l /usr/lib/python3.6/site-packages/emu_docker-0+unknown-py3.6.egg
@@ -29,7 +29,7 @@ ARG TAG="google_apis"
 ARG API="29"
 ARG ABI="x86_64"
 
-RUN echo `python3 ./emu/api_number_to_letter.py $API`
+RUN echo `python3 ./emu_tools/api_number_to_letter.py $API`
 RUN export API_LETTER=`python3 ./emu/api_number_to_letter.py $API` && emu-docker create --no-metrics "stable" "$API_LETTER $TAG $ABI"
 
 FROM debian:stretch-slim AS emulator
