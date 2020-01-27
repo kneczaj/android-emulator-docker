@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  front-envoy:
+    build:
+      context: .
+      dockerfile: envoy.Dockerfile
+
+  emulator:
+    build:
+      context: .
+      dockerfile: emulator.Dockerfile
+  jwt_signer:
+    build:
+      context: .
+      dockerfile: jwt_signer.Dockerfile
+  nginx:
+    build:
+      context: ./android-emulator-container-scripts/js
+      dockerfile: docker/nginx.Dockerfile

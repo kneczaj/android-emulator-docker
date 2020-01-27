@@ -1,10 +1,11 @@
-FROM alpine:3.9.5 AS build
+FROM python:3.5-alpine AS build
 
 WORKDIR /usr/src/app
 
-RUN apk add --no-cache python3 python3-dev build-base
+RUN apk add --no-cache build-base
 
 COPY ./android-emulator-container-scripts/emu ./emu
+COPY ./emu_tools ./emu_tools
 COPY ./android-emulator-container-scripts/js ./js
 COPY ./android-emulator-container-scripts/setup.py \
     ./android-emulator-container-scripts/versioneer.py \
@@ -14,11 +15,12 @@ COPY ./android-emulator-container-scripts/setup.py \
     ./
 
 RUN pip3 install --upgrade pip setuptools
-RUN python3 ./android-emulator-container-scripts/setup.py build
-RUN python3 ./android-emulator-container-scripts/setup.py install
+RUN python3 ./setup.py build
+RUN python3 ./setup.py install
 
-RUN chmod +x /usr/lib/python3.6/site-packages/emu_docker-0+unknown-py3.6.egg
-RUN ls -l /usr/lib/python3.6/site-packages/emu_docker-0+unknown-py3.6.egg
+#RUN ls -l /usr/local/lib/python3.5/site-packages
+#RUN chmod +x /usr/local/lib/python3.5/site-packages/emu_docker-0+unknown-py3.6.egg
+#RUN ls -l /usr/local/lib/python3.5/site-packages/emu_docker-0+unknown-py3.6.egg
 
 # first acceptance does not work, a bug probably
 RUN emu-docker licenses --accept
@@ -30,7 +32,7 @@ ARG API="29"
 ARG ABI="x86_64"
 
 RUN echo `python3 ./emu_tools/api_number_to_letter.py $API`
-RUN export API_LETTER=`python3 ./emu/api_number_to_letter.py $API` && emu-docker create --no-metrics "stable" "$API_LETTER $TAG $ABI"
+RUN export API_LETTER=`python3 ./emu_tools/api_number_to_letter.py $API` && emu-docker create --no-metrics "stable" "$API_LETTER $TAG $ABI"
 
 FROM debian:stretch-slim AS emulator
 
