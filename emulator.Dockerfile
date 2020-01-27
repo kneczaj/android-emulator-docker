@@ -18,10 +18,6 @@ RUN pip3 install --upgrade pip setuptools
 RUN python3 ./setup.py build
 RUN python3 ./setup.py install
 
-#RUN ls -l /usr/local/lib/python3.5/site-packages
-#RUN chmod +x /usr/local/lib/python3.5/site-packages/emu_docker-0+unknown-py3.6.egg
-#RUN ls -l /usr/local/lib/python3.5/site-packages/emu_docker-0+unknown-py3.6.egg
-
 # first acceptance does not work, a bug probably
 RUN emu-docker licenses --accept
 RUN emu-docker licenses --accept
@@ -31,7 +27,6 @@ ARG TAG="google_apis"
 ARG API="29"
 ARG ABI="x86_64"
 
-RUN echo `python3 ./emu_tools/api_number_to_letter.py $API`
 RUN export API_LETTER=`python3 ./emu_tools/api_number_to_letter.py $API` && emu-docker create --no-metrics "stable" "$API_LETTER $TAG $ABI"
 
 FROM debian:stretch-slim AS emulator
@@ -88,20 +83,5 @@ WORKDIR /android/sdk
 # You will need to make use of the grpc snapshot/webrtc functionality to actually interact with
 # the emulator.
 CMD ["/android/sdk/launch-emulator.sh"]
-
-# Note we should use gRPC status endpoint to check for health once the canary release is out.
-HEALTHCHECK --interval=30s \
-            --timeout=30s \
-            --start-period=30s \
-            --retries=3 \
-            CMD /android/sdk/platform-tools/adb shell getprop dev.bootcomplete | grep "1"
-
-# Date frequently changes, so we place this in the last layer.
-LABEL maintainer="unknown@7876a61d4ad1" \
-      SystemImage.Abi=$ABI \
-      SystemImage.TagId=$TAG \
-      SystemImage.GpuSupport=true \
-      AndroidVersion.ApiLevel=$API \
-#      com.google.android.emulator.build-date="2020-01-25T01:40:19.914626Z" \
-      com.google.android.emulator.description="Pixel 2 Emulator, running $TAG-$API-$ABI" \
-#      com.google.android.emulator.version="google_apis-29-x86_64/29.3.4"
+HEALTHCHECK --interval=30s --timeout=30s --start-period=30s --retries=3 \
+CMD /android/sdk/platform-tools/adb shell getprop dev.bootcomplete | grep "1"
