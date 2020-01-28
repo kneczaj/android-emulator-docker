@@ -1,3 +1,6 @@
 [submodule "android-emulator-container-scripts"]
 	path = android-emulator-container-scripts
 	url = https://github.com/kneczaj/android-emulator-container-scripts.git
+[submodule "appium-docker-android"]
+	path = appium-docker-android
+	url = https://github.com/kneczaj/appium-docker-android.git
