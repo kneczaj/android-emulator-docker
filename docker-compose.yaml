@@ -9,6 +9,14 @@ services:
     build:
       context: .
       dockerfile: emulator.Dockerfile
+    shm_size: 1G
+    volumes:
+    - type: bind
+      source: /home/kamil/.android/adbkey
+      target: /root/.android/adbkey
+    - type: bind
+      source: /home/kamil/.android/adbkey.pub
+      target: /root/.android/adbkey.pub
   jwt_signer:
     build:
       context: .

@@ -1,0 +1,35 @@
+# Note: It requires docker-compose 1.6.0+
+#
+# Usage: docker-compose up -d
+version: '3.7'
+
+services:
+  selenium_hub:
+    network_mode: host
+    image: selenium/hub
+    ports:
+    - 4444:4444
+  appium_android_device:
+    network_mode: host
+    build:
+      context: appium-docker-android/Appium
+      args:
+        APPIUM_VERSION: 1.16.0
+        ATD_VERSION: 1.2
+    depends_on:
+    - selenium_hub
+    privileged: true
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+      - type: bind
+        source: /home/kamil/.android/adbkey
+        target: /root/.android/adbkey
+      - type: bind
+        source: /home/kamil/.android/adbkey.pub
+        target: /root/.android/adbkey.pub
+    environment:
+      - CONNECT_TO_GRID=true
+      - SELENIUM_HOST=localhost
+      - BROWSER_NAME=Chrome
+      - ANDROID_DEVICES=localhost:5555
+      - CHROMEDRIVER_AUTODOWNLOAD=true
